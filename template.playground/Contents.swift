@@ -19,19 +19,7 @@ if let fileURL = Bundle.main.url(forResource: "input", withExtension: "txt") {
 
 func solver1(fileContents: String) -> String {
     let lines = fileContents.components(separatedBy: "\n")
-    
-    let games = gamify(list: lines)
-    
-    var sum = 0
-    for game in games {
-        var valid = true
-        for round in game.rounds {
-           // todo
-        }
-        if valid == true { sum += game.id }
-    }
-    
-    return "\(sum)"
+    return "stuff"
 }
 
 func solver2(fileContents: String) -> String {
@@ -39,18 +27,3 @@ func solver2(fileContents: String) -> String {
     return "stuff"
 }
 
-func gamify(list: [String]) -> [Game] {
-    // todo
-    return []
-}
-
-struct Round {
-    var red: Int
-    var green: Int
-    var blue: Int
-}
-
-struct Game {
-    var id: Int
-    var rounds: [Round]
-}
