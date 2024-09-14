@@ -1,8 +1,10 @@
 import UIKit
+import Foundation
+import RegexBuilder
 
 var greeting = "Hello, playground"
 
-import Foundation
+print(greeting)
 
 if let fileURL = Bundle.main.url(forResource: "input", withExtension: "txt") {
     do {
@@ -40,8 +42,78 @@ func solver2(fileContents: String) -> String {
 }
 
 func gamify(list: [String]) -> [Game] {
-    // todo
-    return []
+    var games: [Game] = []
+    let idRef = Reference(Int.self)
+    let roundsRef = Reference(Substring.self)
+    let idVsRounds = Regex {
+        "Game "
+        TryCapture(as: idRef) {
+            OneOrMore(.digit)
+        } transform: { match in
+            Int(match)
+        }
+        ":"
+        Capture(as: roundsRef) {
+            OneOrMore(.any)
+        }
+    }
+    
+    for line in list {
+        print(line)
+        if let result = line.firstMatch(of: idVsRounds) {
+            print("Game: \(result[idRef])")
+            print("Rounds: \(result[roundsRef])")
+            let rounds = roundify(rounds: String(result[roundsRef]))
+        } else {
+            print("😭")
+        }
+    }
+    
+    return games
+}
+
+func roundify(rounds: String) -> [Round] {
+    var roundList: [Round] = []
+    let roundStringList = rounds.components(separatedBy: "; ")
+    
+    let colorRef = Reference(Substring.self)
+    let numberRef = Reference(Int.self)
+    
+    let colorSearch = Regex {
+        TryCapture(as: numberRef) {
+            OneOrMore(.digit)
+        } transform: { match in
+            Int(match)
+        }
+        " "
+        Capture(as: colorRef) {
+            OneOrMore(.word)
+        }
+        ZeroOrMore {
+            ", "
+        }
+    }
+    
+    for roundString in roundStringList {
+        print(roundString)
+        var red = 0
+        var green = 0
+        var blue = 0
+        for match in roundString.matches(of: colorSearch) {
+            print(match.output)
+            print(match[colorRef])
+            print(match[numberRef])
+            switch match[colorRef] {
+                case "red":   red = match[numberRef]
+                case "green": green = match[numberRef]
+                case "blue":  blue = match[numberRef]
+                default: print("Error, color not recognized")
+            }
+            
+            roundList.append(Round(red: red, green: green, blue: blue))
+        }
+    }
+    return roundList
 }
 
 struct Round {
