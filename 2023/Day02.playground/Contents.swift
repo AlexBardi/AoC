@@ -26,11 +26,10 @@ func solver1(fileContents: String) -> String {
     
     var sum = 0
     for game in games {
-        var valid = true
-        for round in game.rounds {
-           // todo
-        }
-        if valid == true { sum += game.id }
+        if game.redMax > 12 { continue }
+        if game.greenMax > 13 { continue }
+        if game.blueMax > 14 { continue }
+        sum += game.id
     }
     
     return "\(sum)"
@@ -61,9 +60,7 @@ func gamify(list: [String]) -> [Game] {
     for line in list {
         print(line)
         if let result = line.firstMatch(of: idVsRounds) {
-            print("Game: \(result[idRef])")
-            print("Rounds: \(result[roundsRef])")
-            let rounds = roundify(rounds: String(result[roundsRef]))
+            games.append(gameMaker(id: result[idRef], rounds: String(result[roundsRef])))
         } else {
             print("😭")
         }
@@ -72,8 +69,11 @@ func gamify(list: [String]) -> [Game] {
     return games
 }
 
-func roundify(rounds: String) -> [Round] {
+func gameMaker(id: Int, rounds: String) -> Game {
     var roundList: [Round] = []
+    var redMax = 0
+    var greenMax = 0
+    var blueMax = 0
     let roundStringList = rounds.components(separatedBy: "; ")
     
     let colorRef = Reference(Substring.self)
@@ -111,9 +111,12 @@ func roundify(rounds: String) -> [Round] {
             }
             
             roundList.append(Round(red: red, green: green, blue: blue))
+            redMax = red > redMax ? red : redMax
+            greenMax = green > greenMax ? green : greenMax
+            blueMax = blue > blueMax ? blue : blueMax
         }
     }
-    return roundList
+    return Game(id: id, rounds: roundList, redMax: redMax, greenMax: greenMax, blueMax: blueMax)
 }
 
 struct Round {
@@ -125,4 +128,7 @@ struct Round {
 struct Game {
     var id: Int
     var rounds: [Round]
+    var redMax: Int
+    var greenMax: Int
+    var blueMax: Int
 }
