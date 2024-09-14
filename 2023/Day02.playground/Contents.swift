@@ -37,7 +37,15 @@ func solver1(fileContents: String) -> String {
 
 func solver2(fileContents: String) -> String {
     let lines = fileContents.components(separatedBy: "\n")
-    return "stuff"
+    
+    let games = gamify(list: lines)
+    
+    var sum = 0
+    for game in games {
+        sum += game.redMax * game.greenMax * game.blueMax
+    }
+    
+    return "\(sum)"
 }
 
 func gamify(list: [String]) -> [Game] {
